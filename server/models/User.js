@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     items: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Pet',
+            ref: 'Item',
         },
     ],
     externId: {
