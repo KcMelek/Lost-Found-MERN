@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "../css/itempage.css";
 import { LOGGED_IN, setConstraint } from "../constraints";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ContactsIcon from '@mui/icons-material/Contacts';
 import { motion } from 'framer-motion'
-import { Navigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import axios from "axios";
 import {
@@ -26,6 +26,8 @@ function ItemPage() {
   const [showContact, setShowContact] = useState(false);
 
   const [loading, setloading] = useState(false);
+  const [slides, setSlides] = useState([])
+
 
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = () => setShowDelete(true);
@@ -56,9 +58,14 @@ function ItemPage() {
       .then((response) => {
         // console.log(response.data);
         const data = response.data.item;
-        const slides = [
-          { image: data.img }
-        ];
+        
+          let slides = []
+      
+          data.img.map((item) => {
+              slides.push({ image: item })
+          })
+      
+      
         
         setItem(response.data.item);
         console.log(response.data.item);
@@ -139,7 +146,7 @@ function ItemPage() {
                       alignItems="center"
                     >
                       <Avatar
-                        src="https://www.softzone.es/app/uploads-softzone.es/2018/04/guest.png"
+                        src={data?.userId?.img}
                         sx={{
                           width: { xs: 80, sm: 95, md: 110 },
                           height: { xs: 80, sm: 95, md: 110 },
@@ -160,6 +167,7 @@ function ItemPage() {
 
                   {current_user === "true" ? (
                     <Button
+                    startIcon={<DeleteIcon />}
                       variant="contained"
                       color={'primary'}
                       sx={{
@@ -179,6 +187,8 @@ function ItemPage() {
                       
                   ) : (
                     <Button
+                    startIcon={<ContactsIcon />}
+
                       variant="contained"
                       color={'primary'}
                       sx={{
@@ -332,7 +342,7 @@ function ItemPage() {
             progress: undefined,
             theme: "light",
             });
-        <Navigate to="/feed"/>
+        window.location.href="/feed"
       })
       .catch((err) => {
         console.log("Error" + err);
@@ -395,15 +405,38 @@ function ItemPage() {
                       aria-labelledby="modal-modal-title"
                       aria-describedby="modal-modal-description"
                     >
-                        <Stack direction="row" width="100%">
-                          <Typography
+                      <Stack
+                    alignItems="center"
+                    justifyContent="center"
+                    gap="20px"
+                    sx={{
+                        
+                        borderRadius: '20px',
+                        backgroundColor: '#eff5ff',
+
+                        width: '410px',
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        boxShadow: 24,
+                        p: 6,
+                    }}
+                >
+                    <Typography
                             fontSize="18px"
                             component="div"
                             m="0"
                             fontWeight="bold"
                           >
-                            Description:
+                            Are you sure ?
                           </Typography>
+                        <Stack direction="row" width="100%"
+                          justifyContent="space-evenly"
+                          alignItems="center"
+                          spacing={2}
+                          >
+                          
                           <Button
                             variant="contained"
                             color={'primary'}
@@ -438,6 +471,56 @@ function ItemPage() {
                               No
                             </motion.div>
                           </Button>
+                        </Stack>
+                        </Stack>
+                      </Modal>
+
+                      <Modal
+                      open={showContact}
+                      onClose={handleCloseContact}
+                      aria-labelledby="modal-modal-title"
+                      aria-describedby="modal-modal-description"
+                    >
+                      <Stack
+                    alignItems="center"
+                    justifyContent="center"
+                    gap="20px"
+                    sx={{
+                        
+                        borderRadius: '20px',
+                        backgroundColor: '#eff5ff',
+
+                        width: '410px',
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        boxShadow: 24,
+                        p: 6,
+                    }}
+                >
+                    <Typography
+                            fontSize="18px"
+                            component="div"
+                            m="0"
+                            fontWeight="bold"
+                          >
+                            {item?.userId?.fullname}'s Contact :
+                          </Typography>
+                          <Stack direction="row" width="100%"
+                          justifyContent="space-evenly"
+                          alignItems="center"
+                          spacing={2}
+                          >
+                            <Typography
+                            fontSize="16px"
+                            component="div"
+                            m="0"
+                            >
+                            {item?.number}
+                            </Typography>
+                          </Stack>
+                       
                         </Stack>
                       </Modal>
 

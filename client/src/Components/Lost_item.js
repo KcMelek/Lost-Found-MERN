@@ -64,9 +64,8 @@ const LostItem = () => {
   });
 
   const handleImageUpload = (e) => {
-    if (e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
+      setImage(e.target.files);
+    
   };
 
   const handleSubmit = async (values) => {
@@ -88,8 +87,8 @@ const LostItem = () => {
       return;
     }
   
-    if (!image) {
-      toast.error('Please upload an image', {
+    if (!image || image.length === 0) {
+      toast.error('Please upload atleast one image', {
         position: "bottom-right",
         autoClose: 1000,
         hideProgressBar: false,
@@ -103,26 +102,46 @@ const LostItem = () => {
     }
   
     setloading(true);
-    const storageRef = ref(storage, `/images/${image.name}`);
-    const fileRef = ref(storageRef, image.name); // create file reference
-    const uploadTask = uploadBytesResumable(fileRef, image);
-    uploadTask.on('state_changed', 
-      (snapshot) => {
-        const uploaded = Math.floor(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    const promises = [];
+
+    for (let i = 0; i < image.length; i++) {
+      const img = image[i];
+      const storageRef = ref(storage, `/images/${img.name}`);
+      const fileRef = ref(storageRef, img.name);
+      const uploadTask = uploadBytesResumable(fileRef, img);
+      const promise = new Promise((resolve, reject) => {
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            const uploaded = Math.floor(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+            setProgress(uploaded);
+          },
+          (error) => {
+            console.log(error);
+            reject(error);
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref)
+              .then((imgUrl) => {
+                resolve(imgUrl);
+              })
+              .catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+          }
         );
-        setProgress(uploaded);
-      },
-      (error) => {
-        console.log(error);
-        setloading(false);
-      }, 
-      () => {
-        // on complete
-        getDownloadURL(uploadTask.snapshot.ref).then(async (imgUrl) => {
-          const newItem = { ...values, img: imgUrl  };
-          try {
-            await axios.post('http://localhost:4000/Items/newItem', newItem, config);
+      });
+  
+      promises.push(promise);
+    }
+  
+    Promise.all(promises)
+      .then((urls) => {
+        const newItem = { ...values, img: urls };
+            axios.post('http://localhost:4000/Items/newItem', newItem, config)
+            .then(() => {
             toast.success('Wohoo 🤩! Item listed successfully.', {
               position: "bottom-right",
               autoClose: 1000,
@@ -136,7 +155,8 @@ const LostItem = () => {
             setloading(false);
             setShow(false);
             window.location.href="/feed"
-          } catch (error) {
+          })      
+          .catch((error) => {
             console.log("An error occurred:", error);
             toast.error('Oops 🙁! Something went wrong.', {
               position: "bottom-right",
@@ -149,11 +169,24 @@ const LostItem = () => {
               theme: "light",
               })
             setloading(false);
-          }
+           
         });
-      }
-    );
-  };
+      })
+      .catch((error) => {
+            console.log("An error occurred:", error);
+            toast.error('Oops 🙁! Something went wrong.', {
+              position: "bottom-right",
+              autoClose: 1000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+              })
+            setloading(false);
+          });
+        };
   
 
   return (

@@ -55,7 +55,7 @@ const Footer = () => {
                         opacity: '50%',
                     }}
                 >
-                    Repository on GitHub
+                    GitHub
                 </Link>
             </Stack>
         </Stack>

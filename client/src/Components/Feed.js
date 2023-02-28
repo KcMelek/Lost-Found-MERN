@@ -14,8 +14,6 @@ import {
   Stack,
 
 } from '@mui/material'
-import "../css/feed.css";
-import "../css/item_card.css";
 import Axios from "axios";
 export default function Feed() {
 
@@ -110,8 +108,8 @@ export default function Feed() {
                               <Avatar
                                   src={item.img}
                                   sx={{
-                                      width: '170px',
-                                      height: '170px',
+                                      width: '190px',
+                                      height: '190px',
                                   }}
                               />
                           </Stack>

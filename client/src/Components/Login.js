@@ -257,14 +257,7 @@ function Login() {
                             Sign Up
                         </Typography>
                     </Stack>
-                    <Stack justifyContent="center" direction="row" gap="10px">
-                        <Typography
-                            component={Link}
-                            fontSize="16px"
-                        >
-                            Forgot your password?
-                        </Typography>
-                    </Stack>
+                    
                 </Stack>
             </Stack>
         </Stack>
