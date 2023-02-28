@@ -21,16 +21,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
-    items: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Item',
-        },
-    ],
-    externId: {
-        type: String,
-        default: '',
-    },
+    
 })
 
 const User = mongoose.model('User', userSchema)

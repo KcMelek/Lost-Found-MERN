@@ -1,5 +1,6 @@
 import User from '../../models/User.js'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config();
 
@@ -37,6 +38,7 @@ export const loginUser = async (req, res) => {
 
         return res.status(200).json({
             ok: true,
+            user:user,
             msg: 'User Logged',
             token,
             id: user._id,

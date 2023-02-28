@@ -14,10 +14,12 @@ const ItemsSchema = new mongoose.Schema({
     { type: String, enum: ['Lost', 'Found'], required: true },
     
     location:
-    {country :{type:String}, lat: { type: Number}, long:{type:Number}},
+    {type: String, required: true},
     
     date: 
-    { type: Date, required: true },
+    { type: String, required: true },
+
+    number: { type: String, required: true },
     
     img: [
         {
@@ -26,8 +28,6 @@ const ItemsSchema = new mongoose.Schema({
                 'https://i.ibb.co/DpZ3qy2/Untitled-design-10.png',
         },
     ],
-    observation: { type: String },
-    meet: {type:Boolean, default:false},
     createdAt: { type: Date, default: Date.now },
 })
 

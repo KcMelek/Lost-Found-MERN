@@ -5,19 +5,13 @@ const createItem = async (req,res) => {
         
     try {
         const itemData = req.body
+        console.log(itemData)
         const newItem = new Item(itemData)
-        const updateUser = await User.findByIdAndUpdate(
-            itemData.userId,
-            {$push:{items: newItem._id}},
-            {new:true}
-        )
-        if (newItem && updateUser){
-            await newItem.save()
-            await updateUser.save()
-            res.status(200).json({ ok: true, msg: 'Item Created' })
-        }else{
-            console.log('An error occured, contact with admin');
-        }
+        if (req.file) {
+            newItem.img = req.file.path;
+          }
+        await newItem.save()
+        res.status(200).json({ ok: true, msg: 'Item Created' })
         
     } catch (error) {
         console.log(error)
