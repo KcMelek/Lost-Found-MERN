@@ -342,7 +342,7 @@ function ItemPage() {
             progress: undefined,
             theme: "light",
             });
-        window.location.href="/feed"
+        window.location.href="/mylistings"
       })
       .catch((err) => {
         console.log("Error" + err);

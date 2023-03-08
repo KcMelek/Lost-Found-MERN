@@ -12,9 +12,26 @@ import {
   CardContent,
   Avatar,
   Stack,
-
+  Pagination,
 } from '@mui/material'
 import Axios from "axios";
+
+const Paginationn = ({ page, setPage, max }) => {
+  const handleChange = (event, page) => {
+    setPage(page);
+  };
+
+  return (
+    <Pagination
+      sx={{ pt: "80px" }}
+      count={Math.ceil(max)}
+      page={page}
+      onChange={handleChange}
+      showLastButton
+      showFirstButton
+    />
+  );
+};
 
 export default function Feed() {
   const getUserId = () => {
@@ -25,6 +42,9 @@ export default function Feed() {
   setConstraint(true);
   
   const [item, setitem] = useState("");
+  const [page, setPage] = useState(1);
+  const [maxPages, setMaxPages] = useState(1);
+
   const ReadMore = ({ children }) => {
     const text = children;
     const [isReadMore, setIsReadMore] = useState(true);
@@ -47,11 +67,16 @@ export default function Feed() {
       method: "GET",
     })
       .then((response) => {
-       
-        let data = response.data.items;
-        // console.log(response.data);
+        const allitems = response.data.items.reverse();
+        const itemsPerPage = 9;
+        const numItems = allitems.length;
+        setMaxPages(Math.ceil(numItems / itemsPerPage));
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const data = allitems.slice(startIndex, endIndex);
+          // console.log(response.data);
         let items = [];
-        data.reverse().map((item) => {
+        data.map((item) => {
           let created_date = new Date(item.createdAt);
           // console.log(date.toString());
           let createdAt =
@@ -183,7 +208,7 @@ export default function Feed() {
       .catch((err) => {
         console.log("Error :", err);
       });
-  }, []);
+  }, [page]);
 
   return (
     <>
@@ -219,21 +244,8 @@ export default function Feed() {
         </>
       </Stack>
       </Stack>
-    <Stack direction="row" pt="20px" pb="20px"
-      alignItems="center"
-      justifyContent="center"
-      gap="24px"
-      width="100%"
-
-    >
-      <Typography
-        noWrap
-        fontSize="26px"
-        color="black"
-        fontWeight="bold"
-      >My Listings :</Typography>
-
-    </Stack><Stack
+<Stack
+      pt="20px"
       direction="row"
       justifyContent={'center'}
       flexWrap="wrap"
@@ -242,6 +254,8 @@ export default function Feed() {
     >
         {item}
       </Stack>
+      <Paginationn page={page} setPage={setPage} max={maxPages} />
+
       </>
   );
 }

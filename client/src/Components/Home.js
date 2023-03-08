@@ -14,7 +14,25 @@ const Home = () => {
   const handleButtonClick = () => {
     if (isLoggedIn) {
       // If the user is logged in, go to /feed
-      window.location.href = "/feed";
+      window.location.href = "/postitem";
+    } else {
+      // If the user is not logged in, go to /log-in
+      window.location.href = "/log-in";
+    }
+  };
+  const handleButtonClickLost = () => {
+    if (isLoggedIn) {
+      // If the user is logged in, go to /feed
+      window.location.href = "/lostItems";
+    } else {
+      // If the user is not logged in, go to /log-in
+      window.location.href = "/log-in";
+    }
+  };
+  const handleButtonClickFound = () => {
+    if (isLoggedIn) {
+      // If the user is logged in, go to /feed
+      window.location.href = "/founditems";
     } else {
       // If the user is not logged in, go to /log-in
       window.location.href = "/log-in";
@@ -134,7 +152,7 @@ const Home = () => {
                         >
                             <Button
                                 
-                                onClick={handleButtonClick}
+                                onClick={handleButtonClickLost}
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -156,7 +174,7 @@ const Home = () => {
                         >
                         <Button
                             
-                            onClick={handleButtonClick}
+                            onClick={handleButtonClickFound}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Field, Formik, Form } from 'formik'
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { Link } from 'react-router-dom'
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from '../firebase.js'
 import {
   Typography,
   Button,
@@ -12,61 +15,114 @@ import {
   TextField,
   Grid,
   Box,
+  Avatar,
 } from '@mui/material'
 
 
 function Signup() {
-  const [info, setInfo] = useState("");
-
-  function handleSubmit(values) {
-
-    var payload = {
-      nickname: values.nickname,
-      fullname: values.fullname,
-      email: values.email,
-      password: values.password,
+    const [info, setInfo] = useState("");
+    const [progress, setProgress] = useState(0);
+    const [image, setImage] = useState(null);
+    
+    const handleImageUpload = (e) => {
+        if (e.target.files[0]) {
+          setImage(e.target.files[0]);
+        }
     };
     
-    axios({
-      url: "http://localhost:4000/users/create",
-      method: "POST",
-      data: payload,
-    })
-      .then((response) => {
-       
-        setInfo(response.data);
- 
-        if (response.data === "Done") {
-          toast.success('You are now successfully Signed up !', {
-            position: "bottom-right",
-            autoClose: 800,
-            hideProgressBar: false,
-            closeOnClick: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+    function handleSubmit(values) {
+      const { nickname, fullname, email, password } = values;
+  
+      const uploadImage = async () => {
+        if (image) {
+          const storageRef = ref(storage, `/images/${image.name}`);
+          const fileRef = ref(storageRef, image.name); // create file reference
+          const uploadTask = uploadBytesResumable(fileRef, image);
+          uploadTask.on('state_changed', 
+            (snapshot) => {
+              const uploaded = Math.floor(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setProgress(uploaded);
+            },
+            (error) => {
+              console.log(error);
+            }, 
+            () => {
+              // on complete
+              getDownloadURL(uploadTask.snapshot.ref).then(async (imgUrl) => {
+                const payload = { nickname, fullname, email, password, img: imgUrl };
+                await axios.post("http://localhost:4000/users/create", payload)
+                  .then((response) => {
+                    setInfo(response.data);
+                    if (response.data === "Done") {
+                      toast.success('You are now successfully Signed up!', {
+                        position: "bottom-right",
+                        autoClose: 800,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                      });
+                      window.location.href="/log-in";
+                    }
+                    else {
+                      toast.error('Something is missing!', {
+                        position: "bottom-right",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                      });
+                    }
+                  })
+                  .catch(() => {
+                    console.log("Error occurred");
+                  });
+              });
             });
-            window.location.href="/log-in";
-
-        }
-        else {
-          toast.error('Something is missing!', {
-            position: "bottom-right",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            })
-        }
+        } else {
+          // No image was selected
+          const payload = { nickname, fullname, email, password };
+          await axios.post("http://localhost:4000/users/create", payload)
+            .then((response) => {
+              setInfo(response.data);
+              if (response.data === "Done") {
+                toast.success('You are now successfully Signed up!', {
+                  position: "bottom-right",
+                  autoClose: 800,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+                window.location.href="/log-in";
+              }
+              else {
+                toast.error('Something is missing!', {
+                  position: "bottom-right",
+                  autoClose: 1000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                  })
+                }
        
-      })
-      .catch(() => {
-        console.log("Error occured");
-      });
-  };
+                })
+            .catch(() => {
+              console.log("Error occured");
+            });
+        }};
+        uploadImage();
+    }
     // console.log("State is :"+ this.state)
     return (
       <Stack
@@ -156,6 +212,49 @@ function Signup() {
                                   justifyContent="flex-start"
                                   width="100%"
                               >
+                                <Stack
+                                        alignItems="center"
+                                        width="100%"
+                                        gap={2}
+                                    >
+                                        <Avatar
+                                                src={image && URL.createObjectURL(image)}
+                                                sx={{
+                                                    width: '6rem',
+                                                    height: '6rem',
+                                                }}
+                                            />
+                                    </Stack>
+
+                                    <Stack
+                                                px="5px"
+                                                sx={{
+                                                    width: {
+                                                        xs: 'auto',
+                                                        md: '50%',
+                                                    },
+                                                }}
+                                            >
+                                                <Typography
+                                                    fontSize="12px"
+                                                    mt="5px"
+                                                >
+                                                    Choose your profile picture
+                                                </Typography>
+                                                
+                                                </Stack>
+                                                <Stack direction="row" alignItems="center" spacing={2}>
+                                              <Button variant="contained" component="label" endIcon={<PhotoCamera />}>
+                                                      Upload
+                                                      <input hidden accept="image/*" multiple type="file" 
+                                                      id="image"
+                                                      label="Upload Image"
+                                                      name="image" 
+                                                      onChange={handleImageUpload} />
+                                              </Button>
+                                              
+                                          </Stack>
+                                
                                   <TextField
                                       sx={{ width: '100%' }}
                                       type="text"

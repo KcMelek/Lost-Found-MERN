@@ -51,7 +51,7 @@ function Login() {
           localStorage.setItem("token", response.data.token);
           // console.log(response.data.user)
           localStorage.setItem("user", JSON.stringify(response.data.user));
-          window.location.href="/feed";
+          window.location.href="/";
         } else {
           setinfo(response.data);
           setloading(false);

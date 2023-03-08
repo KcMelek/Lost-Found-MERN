@@ -3,7 +3,8 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import Signup from "./Components/Signup";
 import Login from "./Components/Login";
-import Feed from "./Components/Feed";
+import LostItems from "./Components/LostItems";
+import FoundItems from "./Components/FoundItems";
 import Home from "./Components/Home";
 import ItemPage from "./Components/ItemPage";
 import LostItem from "./Components/Lost_item";
@@ -22,7 +23,8 @@ function App() {
           <Route path="/" element={<Home />}  />
           <Route path="/log-in" element={<Login/>} />
           <Route path="/sign-up" element={<Signup/>} />
-          <Route path="/feed" element={<Feed/>} />
+          <Route path="/lostitems" element={<LostItems/>} />
+          <Route path="/founditems" element={<FoundItems/>} />
           <Route path="/postitem" element={<LostItem/>} />
           <Route path="/mylistings" element={<MyListings/>} />
           <Route path="/:item" element={<ItemPage/>} />

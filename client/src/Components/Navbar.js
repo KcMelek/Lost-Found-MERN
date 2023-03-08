@@ -1,11 +1,23 @@
-import React from "react";
+import React, { useState } from 'react'
 import { setConstraint } from "../constraints";
-import { Button, Stack } from '@mui/material'
+import { BsFillCaretDownFill } from 'react-icons/bs'
+import { Button, Menu, MenuItem, Stack } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 function Navbar() {
   const token = window.localStorage.getItem("token");
+
+  const [anchorEl, setAnchorEl] = useState(null)
+    const open = Boolean(anchorEl)
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget)
+    }
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
+
   
   const buttonStyle = {
     fontSize: '20px',
@@ -79,22 +91,50 @@ function Navbar() {
                                         Home
                                     </Button>
                                 </motion.div>
-                
-                                <motion.div
-                                    whileHover={{ scale: [null, 1.05, 1.05] }}
-                                    transition={{ duration: 0.4 }}
-                                    whileTap={{ scale: 0.98 }}
-                                >
-                                    <Button
-                                        component={Link}
-                                        to="/feed"
-                                        sx={buttonStyle}
-                                        disableRipple
-                                    >
-                                        Items Browser
-                                    </Button>
-                                </motion.div>
-
+                                <Stack>
+              <motion.div
+                  whileHover={{ scale: [null, 1.05, 1.05] }}
+                  transition={{ duration: 0.4 }}
+                  whileTap={{ scale: 0.98 }}
+              >
+                  <Button
+                      id="basic-button"
+                      aria-controls={open ? 'basic-menu' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? 'true' : undefined}
+                      onClick={handleClick}
+                      sx={buttonStyle}
+                      endIcon={<BsFillCaretDownFill size="15px" />}
+                      disableRipple
+                  >
+                      Items Browser
+                  </Button>
+              </motion.div>
+              <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        <MenuItem
+                            component={Link}
+                            to="/LostItems"
+                            onClick={handleClose}
+                        >
+                            Lost Items
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to="/FoundItems"
+                            onClick={handleClose}
+                        >
+                            Found Items
+                        </MenuItem>
+                    </Menu>
+                </Stack>
                                 <motion.div
                                     whileHover={{ scale: [null, 1.05, 1.05] }}
                                     transition={{ duration: 0.4 }}
@@ -144,20 +184,50 @@ function Navbar() {
                   </Button>
               </motion.div>
 
+              <Stack>
               <motion.div
                   whileHover={{ scale: [null, 1.05, 1.05] }}
                   transition={{ duration: 0.4 }}
                   whileTap={{ scale: 0.98 }}
               >
                   <Button
-                      component={Link}
-                      to="/log-in"
+                      id="basic-button"
+                      aria-controls={open ? 'basic-menu' : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? 'true' : undefined}
+                      onClick={handleClick}
                       sx={buttonStyle}
+                      endIcon={<BsFillCaretDownFill size="15px" />}
                       disableRipple
                   >
                       Items Browser
                   </Button>
               </motion.div>
+              <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        <MenuItem
+                            component={Link}
+                            to="/log-in"
+                            onClick={handleClose}
+                        >
+                            Lost Items
+                        </MenuItem>
+                        <MenuItem
+                            component={Link}
+                            to="/log-in"
+                            onClick={handleClose}
+                        >
+                            Found Items
+                        </MenuItem>
+                    </Menu>
+                </Stack>
               </Stack>
                 )}
                </Stack>

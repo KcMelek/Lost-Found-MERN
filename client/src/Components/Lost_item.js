@@ -154,7 +154,7 @@ const LostItem = () => {
               })
             setloading(false);
             setShow(false);
-            window.location.href="/feed"
+            window.location.href="/mylistings"
           })      
           .catch((error) => {
             console.log("An error occurred:", error);
